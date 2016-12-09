@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE sqlMap      
+    PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"      
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="User">
+
+	<typeAlias alias="User" type="cn.com.yusys.ssi.pojo.User" />
+	
+	<resultMap class="cn.com.yusys.ssi.pojo.User" id="user_columns">
+		<result property="id" column="id"/>
+		<result property="loginName" column="login_name"/>
+		<result property="realName" column="real_name"/>
+		<result property="password" column="password"/>
+		<result property="birthday" column="birthday"/>
+		<result property="gender" column="gender"/>
+	</resultMap>
+	
+	<select id="findUserLikeLoginName" parameterClass="string" resultClass="User">
+		select
+			id			id,
+			login_name	loginName,
+			password	password,
+			real_name	realName,
+			birthday	birthday,
+			gender		gender
+		from
+			t_user
+		where
+			login_name like #name#
+	</select>
+	
+	<select id="getUserByLoginNameAndPassword" parameterClass="java.util.HashMap" resultClass="User">
+		select
+			id			id,
+			login_name	loginName,
+			password	password,
+			real_name	realName,
+			birthday	birthday,
+			gender		gender
+		from
+			t_user
+		where
+			login_name = #name#
+		and
+			password = #passwd#
+	</select>
+	
+	<select id="getUserByIdUseResultMap" parameterClass="integer" resultMap="user_columns">
+		select
+			*
+		from
+			t_user
+		where
+			id = #id#
+	</select>
+	
+	<select id="getUserById" parameterClass="integer" resultClass="User">
+		select
+			id			id,
+			login_name	loginName,
+			password	password,
+			real_name	realName,
+			birthday	birthday,
+			gender		gender
+		from
+			t_user
+		where
+			id = #id#
+	</select>
+	
+	<select id="findUserList" resultClass="User">
+		select
+			id			id,
+			login_name	loginName,
+			password	password,
+			real_name	realName,
+			birthday	birthday,
+			gender		gender
+		from
+			t_user
+	</select>
+	
+	<select id="findUserListByCondition" resultClass="User">
+		select
+			id			id,
+			login_name	loginName,
+			password	password,
+			real_name	realName,
+			birthday	birthday,
+			gender		gender
+		from
+			t_user
+		where
+			id <![CDATA[ <= ]]> 5
+	</select>
+	
+	<insert id="insertUser" parameterClass="User">
+		insert into t_user(login_name, password, real_name, birthday, gender) values(#loginName#, #password#, #realName#, #birthday#, #gender#)
+	</insert>
+	
+	<insert id="insertUserReturnId" parameterClass="User">
+		<selectKey keyProperty="id" resultClass="java.lang.Integer" type="post">
+			select last_insert_id() id
+		</selectKey>
+		insert into t_user(login_name, password, real_name, birthday, gender) values(#loginName#, #password#, #realName#, #birthday#, #gender#)
+	</insert>
+	
+	<update id="updateUser" parameterClass="User">
+		update
+			t_user
+		set
+			login_name = #loginName#,
+			password = #password#,
+			real_name = #realName#,
+			birthday = #birthday#,
+			gender = #gender#
+		where
+			id = #id#
+	</update>
+	
+	<update id="updateUserDynamic" parameterClass="User">
+		update
+			t_user
+		set
+			login_name = #loginName#
+		<dynamic>
+			<isNotEmpty property="password" prepend=",">
+				password = #password#
+			</isNotEmpty>
+			<isNotEmpty property="realName" prepend=",">
+				real_name = #realName#
+			</isNotEmpty>
+			<isNotEmpty property="gender" prepend=",">
+				gender = $gender$
+			</isNotEmpty>
+		</dynamic>
+		where
+			id = #id#
+	</update>
+	
+	<delete id="deleteUserById" parameterClass="int">
+		delete from t_user where id = #id#
+	</delete>
+</sqlMap>
